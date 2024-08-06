@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submissions</title>
+  <!-- Firebase Scripts (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Firebase Config Script -->
+  <script src="firebase-config.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .submission {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+    .submission h2 {
+      margin-top: 0;
+    }
+    .submission p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Submissions</h1>
+  <div id="submission-list"></div>
+
+  <script>
+    async function loadSubmissions() {
+      try {
+        const submissions = await firestore.collection('submissions').orderBy('timestamp', 'desc').get();
+        const list = document.getElementById('submission-list');
+        submissions.forEach(doc => {
+          const data = doc.data();
+          const submissionItem = document.createElement('div');
+          submissionItem.classList.add('submission');
+          submissionItem.innerHTML = `
+            <h2>${data.name}</h2>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Message:</strong> ${data.message}</p>
+            <p><strong>Date:</strong> ${data.timestamp.toDate()}</p>
+          `;
+          list.appendChild(submissionItem);
+        });
+      } catch (error) {
+        console.error('Error loading submissions:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSubmissions);
+  </script>
+</body>
+</html>
